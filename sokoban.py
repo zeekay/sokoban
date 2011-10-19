@@ -61,7 +61,6 @@ class GameMap(object):
         """
         for y, row in enumerate(self.map):
             for x, char in enumerate(row):
-                print char
                 if char == NAME_TO_CHAR['player']:
                     return (x, y)
         else:
@@ -82,11 +81,10 @@ class GameMap(object):
         Draws map.
         """
         self.scr.clear()
-        self.scr.border(0)
         for y, row in enumerate(self.map):
             for x, char in enumerate(row):
                 self.scr.addstr((y + 2), (x + 2), char)
-        self.scr.refresh()
+                self.scr.refresh()
 
     def next_coord(self, coord, key):
         """

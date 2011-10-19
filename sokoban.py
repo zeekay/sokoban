@@ -17,6 +17,10 @@ KEYS = {
         ord('s'): 'down',
         ord('d'): 'right',
         # arrow keys
+        259: 'up',
+        258: 'down',
+        260: 'left',
+        261: 'right',
     },
     'quit': ord('q'),
 }

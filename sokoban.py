@@ -36,8 +36,8 @@ CHAR_TO_NAME = {
 NAME_TO_CHAR = dict(map(reversed, CHAR_TO_NAME.items()))
 
 class GameMap(object):
-    def __init__(self, game):
-        self.scr = game.scr
+    def __init__(self, window):
+        self.window = window
         self.map = []
         self.prev_char = 'space'
 
@@ -84,11 +84,10 @@ class GameMap(object):
         """
         Draws map.
         """
-        self.scr.clear()
         for y, row in enumerate(self.map):
             for x, char in enumerate(row):
-                self.scr.addstr((y + 2), (x + 2), char)
-                self.scr.refresh()
+                self.window.addstr(y, x, char)
+                self.window.refresh()
 
     def next_coord(self, coord, key):
         """
@@ -144,20 +143,30 @@ class GameMap(object):
 
 class Game(object):
     def __init__(self):
-        self.scr = curses.initscr()
+        self.stdscr = curses.initscr()
         curses.noecho()
         curses.curs_set(0)
-        self.scr.keypad(1)
+        self.stdscr.keypad(1)
         curses.raw()
-        self.map = GameMap(self)
-        self.map.load('test_map')
+        self.title_win = self.stdscr.subwin(2, 50, 0, 0)
+        self.game_win = self.stdscr.subwin(2, 0)
+        self.map = GameMap(self.game_win)
+
+    def load_map(self, map_name):
+        self.map.load(map_name)
+        self.map.draw()
+        self.update_title('sokoban! map: %s' % map_name)
+
+    def update_title(self, title):
+        self.title_win.addstr(title)
+        self.title_win.refresh()
 
     def loop(self):
         log.info("Sokuban has started.")
-        self.map.draw()
+        self.load_map('test_map')
         try:
             while True:
-                key = self.scr.getch()
+                key = self.stdscr.getch()
                 if key in KEYS['movement']:
                     self.map.move_player(key)
                 if key == KEYS['quit']:
@@ -169,7 +178,7 @@ class Game(object):
 
     def quit(self):
         curses.nocbreak()
-        self.scr.keypad(0)
+        self.stdscr.keypad(0)
         curses.echo()
         curses.endwin()
 

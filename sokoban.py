@@ -149,17 +149,27 @@ class Game(object):
         self.stdscr.keypad(1)
         curses.raw()
         self.title_win = self.stdscr.subwin(2, 50, 0, 0)
+        self.score_win = self.stdscr.subwin(2, 29, 0, 51)
         self.game_win = self.stdscr.subwin(2, 0)
         self.map = GameMap(self.game_win)
+        self.score = 0
 
     def load_map(self, map_name):
         self.map.load(map_name)
         self.map.draw()
         self.update_title('sokoban! map: %s' % map_name)
+        self.update_score()
 
     def update_title(self, title):
+        self.score_win.erase()
         self.title_win.addstr(title)
         self.title_win.refresh()
+
+    def update_score(self):
+        self.score_win.erase()
+        self.score += 1
+        self.score_win.addstr('score: %s' % self.score)
+        self.score_win.refresh()
 
     def loop(self):
         log.info("Sokuban has started.")
@@ -169,6 +179,7 @@ class Game(object):
                 key = self.stdscr.getch()
                 if key in KEYS['movement']:
                     self.map.move_player(key)
+                    self.update_score()
                 if key == KEYS['quit']:
                     break
         except Exception:

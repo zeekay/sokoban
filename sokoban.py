@@ -98,7 +98,7 @@ class GameMap(object):
             'down': lambda x, y: (x, y+1),
             'left': lambda x, y: (x-1, y),
             'right':lambda x, y: (x+1, y),
-        }.get(KEYS['movement'][key])(*coord)
+        }[KEYS['movement'][key]](*coord)
 
     def move_player(self, key):
         """
@@ -134,12 +134,23 @@ class GameMap(object):
         def invalid_movement():
             pass
 
-        return {
+        states = {
             'box': box,
             'filled': box,
             'slot': move,
             'space': move,
-        }.get(next_char, invalid_movement)()
+        }
+        states.get(next_char, invalid_movement)()
+        if not filter(lambda x: NAME_TO_CHAR['box'] in x, self.map):
+            self.victory()
+
+    def victory(self):
+        """
+        Draws victory notification
+        """
+        self.window.erase()
+        self.window.addstr('YAY VICTORY')
+        self.window.refresh()
 
 class Game(object):
     def __init__(self):
